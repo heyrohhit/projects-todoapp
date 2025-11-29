@@ -23,7 +23,7 @@ const Page = () => {
     });
   };
 
-  const submitHandler = async (e) => {
+  const submitHandler = async () => {
     // e.preventDefault();
 
     let finalNote = {
