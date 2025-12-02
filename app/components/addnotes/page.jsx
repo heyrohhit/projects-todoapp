@@ -105,7 +105,7 @@ const Page = () => {
           {isEdit ? "Edit Note" : "Add New Note"}
         </h1>
 
-        <form className="flex flex-col gap-4" onSubmit={submitHandler} method="">
+        <form className="flex flex-col gap-4" onSubmit={submitHandler} method="POST">
           <input
             type="text"
             placeholder="Enter title"
