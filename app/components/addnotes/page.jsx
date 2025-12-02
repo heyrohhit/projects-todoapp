@@ -24,7 +24,7 @@ const Page = () => {
   };
 
   const submitHandler = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     let finalNote = {
       ...noteData,
