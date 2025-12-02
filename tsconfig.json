@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/page.jsx", "app/components/addnotes/page.jsx", "app/components/addnotes/page.jsx", "app/components/shownotes/page.jsx"  ],
+, "app/page.jsx", "app/components/addnotes/page.tsx", "app/components/addnotes/page.tsx", "app/components/shownotes/page.jsx"  ],
   "exclude": ["node_modules"]
 }

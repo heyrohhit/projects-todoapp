@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 
 const Page = () => {
-  const [formShow, setFormShow] = useState(false);
+    const [formShow, setFormShow] = useState(false);
 
   // This store note for ADD & EDIT
   const [noteData, setNoteData] = useState({
@@ -24,7 +24,7 @@ const Page = () => {
   };
 
   const submitHandler = async (e) => {
-    // e.preventDefault();
+    e.preventDefault();
 
     let finalNote = {
       ...noteData,
@@ -58,7 +58,7 @@ const Page = () => {
 
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
 
-      // alert(isEdit ? "Note Updated!" : "Note Added!");
+      alert(isEdit ? "Note Updated!" : "Note Added!");
 
       // reset form
       setNoteData({
@@ -70,6 +70,9 @@ const Page = () => {
 
       setIsEdit(false);
       setFormShow(false);
+    }
+    else{
+      alert(data.error)
     }
   };
 
@@ -84,6 +87,7 @@ const Page = () => {
   useEffect(() => {
     window.startEditNote = startEdit;
   }, []);
+
 
   return (
     <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} bg-[rgba(0,0,0,0.5)]`}>
@@ -100,7 +104,7 @@ const Page = () => {
           {isEdit ? "Edit Note" : "Add New Note"}
         </h1>
 
-        <form className="flex flex-col gap-4" onSubmit={submitHandler}>
+        <form className="flex flex-col gap-4" onSubmit={submitHandler} method="">
           <input
             type="text"
             placeholder="Enter title"
