@@ -107,7 +107,7 @@ const Page = () => {
   }, []);
 
   return (
-    <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} bg-[rgba(0,0,0,0.5)]`}>
+    <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} bg-[rgba(0,0,0,0.5)] sm:flex sm:items-center sm:flex-col `}>
 
       {/* 🔥 ALERT MESSAGE (Show Below Add Button) */}
       <div className="w-full max-w-xl mx-auto mt-2">
@@ -136,14 +136,14 @@ const Page = () => {
           {isEdit ? "Edit Note" : "Add New Note"}
         </h1>
 
-        <form className="flex flex-col gap-4" onSubmit={submitHandler} method="POST">
+        <form className="flex flex-col gap-4 sm:items-center" onSubmit={submitHandler} method="POST">
           <input
             type="text"
             placeholder="Enter title"
             name="title"
             value={noteData.title}
             onChange={handelForm}
-            className="rounded p-2 focus:bg-blue-200 focus:text-black md:w-[80%]"
+            className="rounded p-2 focus:bg-blue-200 focus:text-black md:w-[100%] sm:w-full"
           />
 
           <textarea
@@ -151,7 +151,7 @@ const Page = () => {
             name="msg"
             value={noteData.msg}
             onChange={handelForm}
-            className="md:w-[80%] rounded p-2 h-40 resize-none focus:bg-blue-200 focus:text-black"
+            className="md:w-[95%] rounded p-2 h-40 resize-none focus:bg-blue-200 focus:text-black sm:w-full"
           ></textarea>
 
           <button
