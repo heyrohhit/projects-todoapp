@@ -1,35 +1,47 @@
 "use client";
 import { useState, useEffect } from "react";
 
+// ----------------- Types -----------------
+interface NoteType {
+  id: number | null;
+  title: string;
+  msg: string;
+  date: string;
+}
+
+// ----------------- Component -----------------
 const Page = () => {
   const [formShow, setFormShow] = useState(false);
 
-  // This store note for ADD & EDIT
-  const [noteData, setNoteData] = useState({
+  const [noteData, setNoteData] = useState<NoteType>({
     id: null,
     title: "",
     msg: "",
     date: "",
   });
 
-  const [isEdit, setIsEdit] = useState(false); // 🔥 Add/Edit mode flag
+  const [isEdit, setIsEdit] = useState(false);
 
   const toggleForm = () => setFormShow(!formShow);
 
-  const handelForm = (e) => {
+  // ----------------- Form Handler -----------------
+  const handelForm = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setNoteData({
       ...noteData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const submitHandler = async () => {
-    // e.preventDefault();
+  // ----------------- Submit Handler -----------------
+  const submitHandler = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
 
-    let finalNote = {
+    const finalNote: NoteType = {
       ...noteData,
       date: new Date().toLocaleString(),
-      id: noteData.id || Date.now(), // agar new note hai to new id
+      id: noteData.id || Date.now(),
     };
 
     // API call
@@ -42,25 +54,23 @@ const Page = () => {
     const data = await response.json();
 
     if (data.success) {
-      const oldNotes = JSON.parse(localStorage.getItem("notes") || "[]");
+      const oldNotes: NoteType[] = JSON.parse(
+        localStorage.getItem("notes") || "[]"
+      );
 
-      let updatedNotes = [];
+      let updatedNotes: NoteType[] = [];
 
       if (isEdit) {
-        // EDIT MODE — replace the note
         updatedNotes = oldNotes.map((n) =>
           n.id === finalNote.id ? finalNote : n
         );
       } else {
-        // ADD MODE — add new note
         updatedNotes = [...oldNotes, finalNote];
       }
 
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
 
-      // alert(isEdit ? "Note Updated!" : "Note Added!");
-
-      // reset form
+      // Reset form
       setNoteData({
         id: null,
         title: "",
@@ -73,25 +83,29 @@ const Page = () => {
     }
   };
 
-  // 🔥 Function to open form in EDIT MODE
-  const startEdit = (note) => {
+  // ----------------- Start Edit -----------------
+  const startEdit = (note: NoteType) => {
     setNoteData(note);
     setIsEdit(true);
-    setFormShow(true); // same form opens
+    setFormShow(true);
   };
 
-  // EXPOSE this function globally so ShowNotes can call it!
+  // Make it callable from ShowNotes
   useEffect(() => {
+    // @ts-ignore
     window.startEditNote = startEdit;
   }, []);
 
   return (
-    <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} bg-[rgba(0,0,0,0.5)]`}>
-
-      {/* ----- FORM ----- */}
+    <main
+      className={`h-fit sticky top-[60px] ${
+        formShow ? "h-screen" : "sm:h-auto md:h-screen"
+      } bg-[rgba(0,0,0,0.5)]`}
+    >
+      {/* FORM */}
       <div
         className={`
-         text-white p-6 rounded-lg w-full max-w-xl
+          text-white p-6 rounded-lg w-full max-w-xl
           transition-all duration-300
           ${formShow ? "fixed" : "hidden md:block"}
         `}
