@@ -31,7 +31,7 @@ const Page = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
+    
     // Show loading message
     setLoadingMsg(isEdit ? "Updating note..." : "Adding note...");
 
@@ -63,6 +63,7 @@ const Page = () => {
       }
 
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
+      window.dispatchEvent(new Event("notesUpdated"));
 
       // Hide loading
       setLoadingMsg("");
@@ -95,12 +96,14 @@ const Page = () => {
 
   const startEdit = (note) => {
     setNoteData(note);
+    window.dispatchEvent(new Event("notesUpdated"));
     setIsEdit(true);
     setFormShow(true);
   };
 
   useEffect(() => {
     window.startEditNote = startEdit;
+    window.dispatchEvent(new Event("notesUpdated"));
   }, []);
 
   return (
