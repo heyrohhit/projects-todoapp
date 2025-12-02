@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import AlertMsg from "../AlertMsg/page";
 
 const Page = () => {
-    const [formShow, setFormShow] = useState(false);
+  const [formShow, setFormShow] = useState(false);
 
-  // This store note for ADD & EDIT
   const [noteData, setNoteData] = useState({
     id: null,
     title: "",
@@ -12,7 +12,13 @@ const Page = () => {
     date: "",
   });
 
-  const [isEdit, setIsEdit] = useState(false); // 🔥 Add/Edit mode flag
+  const [isEdit, setIsEdit] = useState(false);
+
+  // 🔥 Alert message states
+  const [alert, setAlert] = useState(null);
+
+  // 🔥 Loading message (Note Adding…)
+  const [loadingMsg, setLoadingMsg] = useState("");
 
   const toggleForm = () => setFormShow(!formShow);
 
@@ -26,13 +32,15 @@ const Page = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    // Show loading message
+    setLoadingMsg(isEdit ? "Updating note..." : "Adding note...");
+
     let finalNote = {
       ...noteData,
       date: new Date().toLocaleString(),
-      id: noteData.id || Date.now(), // agar new note hai to new id
+      id: noteData.id || Date.now(),
     };
 
-    // API call
     const response = await fetch("/api/addNotes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -42,26 +50,30 @@ const Page = () => {
     const data = await response.json();
 
     if (data.success) {
-      
       const oldNotes = JSON.parse(localStorage.getItem("notes") || "[]");
 
       let updatedNotes = [];
 
       if (isEdit) {
-        // EDIT MODE — replace the note
         updatedNotes = oldNotes.map((n) =>
           n.id === finalNote.id ? finalNote : n
         );
       } else {
-        // ADD MODE — add new note
         updatedNotes = [...oldNotes, finalNote];
       }
 
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
 
-      alert(isEdit ? "Note Updated!" : "Note Added!");
+      // Hide loading
+      setLoadingMsg("");
 
-      // reset form
+      // Show success alert
+      setAlert({
+        type: "success",
+        msg: isEdit ? "Note Updated Successfully!" : "Note Added Successfully!",
+      });
+
+      // Reset form
       setNoteData({
         id: null,
         title: "",
@@ -71,29 +83,45 @@ const Page = () => {
 
       setIsEdit(false);
       setFormShow(false);
-    }
-    else{
-      alert(data.error)
+    } else {
+      setLoadingMsg("");
+
+      setAlert({
+        type: "error",
+        msg: data.error,
+      });
     }
   };
 
-  // 🔥 Function to open form in EDIT MODE
   const startEdit = (note) => {
     setNoteData(note);
     setIsEdit(true);
-    setFormShow(true); // same form opens
+    setFormShow(true);
   };
 
-  // EXPOSE this function globally so ShowNotes can call it!
   useEffect(() => {
     window.startEditNote = startEdit;
   }, []);
 
-
   return (
     <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} bg-[rgba(0,0,0,0.5)]`}>
 
-      {/* ----- FORM ----- */}
+      {/* 🔥 ALERT MESSAGE (Show Below Add Button) */}
+      <div className="w-full max-w-xl mx-auto mt-2">
+        {alert && (
+          <AlertMsg
+            type={alert.type}
+            msg={alert.msg}
+            onClose={() => setAlert(null)}
+          />
+        )}
+      </div>
+
+      {/* 🔥 LOADING MESSAGE */}
+      {loadingMsg && (
+        <p className="text-center text-white mt-2">{loadingMsg}</p>
+      )}
+
       <div
         className={`
          text-white p-6 rounded-lg w-full max-w-xl
@@ -132,7 +160,6 @@ const Page = () => {
         </form>
       </div>
 
-      {/* Mobile Button */}
       <button
         onClick={toggleForm}
         className="md:hidden fixed top-15 right-5 bg-black text-white rounded-full w-12 h-12 flex justify-center items-center text-2xl"
