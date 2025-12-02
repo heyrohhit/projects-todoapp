@@ -24,7 +24,7 @@ const Page = () => {
   };
 
   const submitHandler = async (e) => {
-    // e.preventDefault();
+    e.preventDefault();
 
     let finalNote = {
       ...noteData,
@@ -42,6 +42,7 @@ const Page = () => {
     const data = await response.json();
 
     if (data.success) {
+      
       const oldNotes = JSON.parse(localStorage.getItem("notes") || "[]");
 
       let updatedNotes = [];

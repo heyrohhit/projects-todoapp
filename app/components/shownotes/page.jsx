@@ -6,7 +6,7 @@ export default function ShowNotes() {
 
   useEffect(() => {
     setNotes(JSON.parse(localStorage.getItem("notes") || "[]"));
-  }, []);
+  }, [notes]);
 
   const deleteNote = (id) => {
     const updated = notes.filter((n) => n.id !== id);
