@@ -31,7 +31,7 @@ export default function ShowNotes() {
   };
 
   return (
-    <div className="w-full p-6 overflow-x-hidden">
+    <div className="w-full p-6 overflow-x-hidden md:mt-10">
       <h1 className="text-3xl font-bold text-center mb-6 text-gray-300">
         Your Notes
       </h1>

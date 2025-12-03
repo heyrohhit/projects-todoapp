@@ -107,10 +107,10 @@ const Page = () => {
   }, []);
 
   return (
-    <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} bg-[rgba(0,0,0,0.5)] sm:flex sm:items-center sm:flex-col `}>
+    <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} sm:flex sm:items-center sm:flex-col sm:w-screen`}>
 
       {/* 🔥 ALERT MESSAGE (Show Below Add Button) */}
-      <div className="w-full max-w-xl mx-auto mt-2">
+      <div className="w-full max-w-xl mx-auto mt-2 p-2">
         {alert && (
           <AlertMsg
             type={alert.type}
@@ -122,7 +122,7 @@ const Page = () => {
 
       {/* 🔥 LOADING MESSAGE */}
       {loadingMsg && (
-        <p className="text-center text-white mt-2">{loadingMsg}</p>
+        <p className="w-full text-center text-white mt-2">{loadingMsg}</p>
       )}
 
       <div
