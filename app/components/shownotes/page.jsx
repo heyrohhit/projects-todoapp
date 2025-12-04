@@ -36,7 +36,7 @@ export default function ShowNotes({ onEdit }) {
       <h2 className="text-3xl font-bold text-white mb-5">Your Notes</h2>
 
       {/* Notes Grid */}
-      <div className="w-full gap-3 flex justify-start flex-wrap-reverse sm:justify-center">
+      <div className="w-full gap-3 flex justify-start flex-wrap-reverse max-[720px]:justify-center">
         {notes.map((note) => (
           <div
             key={note.id}
