@@ -31,7 +31,7 @@ export default function ShowNotes({ onEdit }) {
 
 
   return (
-    <div className="w-full overflow-x-hidden p-4 min-h-[60vh]">
+    <div className="w-full overflow-x-hidden p-4 min-h-[60vh md:ml-20 lg:ml-0">
 
       <h2 className="text-3xl font-bold text-white mb-5">Your Notes</h2>
 
