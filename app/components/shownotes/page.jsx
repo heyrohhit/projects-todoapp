@@ -36,11 +36,11 @@ export default function ShowNotes({ onEdit }) {
       <h2 className="text-3xl font-bold text-white mb-5">Your Notes</h2>
 
       {/* Notes Grid */}
-      <div className="gap-5 flex justify-center flex-wrap-reverse">
+      <div className="w-full gap-3 flex justify-start flex-wrap-reverse sm:justify-center">
         {notes.map((note) => (
           <div
             key={note.id}
-            className="w-[300px] h-auto bg-gradient-to-br from-[#a256f2] to-[#0459ed] text-white p-5 rounded-2xl shadow-lg backdrop-blur-lg transition-transform hover:scale-[1.02] hover:shadow-2xl overflow-x-hidden"
+            className="w-[282px] h-auto bg-gradient-to-br from-[#a256f2] to-[#0459ed] text-white p-5 rounded-2xl shadow-lg backdrop-blur-lg transition-transform hover:scale-[1.02] hover:shadow-2xl overflow-x-hidden"
           >
             {/* Title */}
             <h3 className="text-xl font-bold truncate">{note.title}</h3>
