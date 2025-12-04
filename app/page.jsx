@@ -1,36 +1,84 @@
-"use client"
+"use client";
+import { useState } from "react";
+import AddNotes from "./components/addnotes/page";
+import ShowNotes from "./components/shownotes/page";
 
-import Addnotes from "./components/addnotes/page"
-import Shownotes from "./components/shownotes/page"
+export default function Page() {
+  const [editData, setEditData] = useState(null);
+  const [mobileView, setMobileView] = useState(false); // mobile toggle
 
-const page = () => {
-  
-  const deletenotes =()=>{
-    console.log("working")
+  // Edit button clicked
+  const handleEdit = (note) => {
+    setEditData(note);
+    setMobileView(true); // Mobile me edit click → form open
+  };
+
+  const clearEdit = () => setEditData(null);
+
+  // Update ke baad form close karne ke liye
+  const closeMobileForm = () => setMobileView(false);
+
+
+  // all note delete function
+  const handleDeletAll = () =>{
     localStorage.clear()
-    window.dispatchEvent(new Event("notesUpdated"));
+    window.dispatchEvent(new Event("notesUpdated"))
   }
   return (
-    <div className="w-screen flex flex-wrap relative h-fit overflow-x-hidden">
-    <header className="p-2 w-full items-center sm:sticky md:fixed top-0 z-10 bg-black">
-      <h1 className="flex justify-center items-center text-3xl ">Todo App</h1>
-    </header>
-   <div className="flex w-screen flex-wrap ">
-     <div className="sm:w-full md:w-[30%] h-fit sm:sticky md:fixed md:z-[9] top-[50px] bg-black">
-      <Addnotes/>
-    </div>
-    <div className="md:w-[70%] p-4 sm:w-full md:sticky md:top-[10%] md:left-[30%]">
-      <Shownotes/>
-    </div>
-    <div className="fixed bottom-5 right-5">
-      <button className="bg-orange-500 p-2 rounded-full"
-      onClick={deletenotes}>
-        Delete All Notes
-      </button>
-    </div>
-   </div>
-    </div>
-  )
-}
+    <div className="w-screen min-h-screen bg-gray-800 overflow-x-hidden font-sans relative">
 
-export default page
+      {/* HEADER */}
+      <div className="w-full py-3 bg-black text-white text-center text-3xl font-bold fixed top-0 left-0 z-50">
+        Todo App
+      </div>
+
+      {/* MOBILE FLOAT BUTTON */}
+      <button
+        onClick={() => setMobileView(!mobileView)}
+        className="md:hidden fixed top-20 right-5 z-50 bg-black text-white 
+        w-12 h-12 rounded-full text-4xl flex justify-center items-center shadow-lg"
+      >
+        {mobileView ? "×" : "+"}
+      </button>
+
+      {/* ===== MOBILE VIEW ===== */}
+      <div className="md:hidden pt-20 px-3">
+        {mobileView ? (
+          <AddNotes 
+            editData={editData} 
+            clearEdit={clearEdit}
+            closeMobileForm={closeMobileForm}   // 🔥 UPDATE KE BAAD FORM CLOSE
+          />
+        ) : (
+          <ShowNotes onEdit={handleEdit} />
+        )}
+      </div>
+
+      {/* ===== DESKTOP + TABLET VIEW ===== */}
+      <div className="hidden md:flex pt-20">
+
+        {/* LEFT AddNotes */}
+        <div className="fixed top-[64px] w-[30%] lg:w-[20%] 
+        h-[calc(100vh-80px)] overflow-y-auto bg-gray-900 text-white p-4 border-r">
+          <AddNotes 
+            editData={editData} 
+            clearEdit={clearEdit}
+          />
+        </div>
+
+        {/* RIGHT ShowNotes */}
+        <div className="absolute top-[64px] left-[20%] 
+        w-[80%] p-4 text-white">
+          <ShowNotes onEdit={handleEdit} />
+        </div>
+      </div>
+
+      {/* Delete All Button */}
+      <div className="fixed bottom-10 right-5 bg-red-600 text-white 
+      p-3 rounded-xl shadow-lg cursor-pointer text-sm uppercase">
+       <button className="cursor-pointer" onClick={handleDeletAll}> Delete All Notes</button>
+      </div>
+
+    </div>
+  );
+}

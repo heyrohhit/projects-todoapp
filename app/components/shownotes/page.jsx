@@ -1,76 +1,88 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function ShowNotes() {
+export default function ShowNotes({ onEdit }) {
   const [notes, setNotes] = useState([]);
 
-  // Load notes initially
   const loadNotes = () => {
     const stored = JSON.parse(localStorage.getItem("notes") || "[]");
     setNotes(stored);
   };
 
   useEffect(() => {
-    loadNotes(); // initial load
+    loadNotes();
 
-    // 🔥 Listen for updates
     window.addEventListener("notesUpdated", loadNotes);
-
-    return () => {
-      window.removeEventListener("notesUpdated", loadNotes);
-    };
+    return () => window.removeEventListener("notesUpdated", loadNotes);
   }, []);
 
   const deleteNote = (id) => {
     const updated = notes.filter((n) => n.id !== id);
+
     localStorage.setItem("notes", JSON.stringify(updated));
     setNotes(updated);
 
-    // 🔥 delete par bhi event fire karna zaroori hai
+
+
     window.dispatchEvent(new Event("notesUpdated"));
   };
 
+  const formatDate = (d) => new Date(d).toLocaleString();
+
+
   return (
-    <div className="w-full p-6 overflow-x-hidden md:mt-10">
-      <h1 className="text-3xl font-bold text-center mb-6 text-gray-300">
-        Your Notes
-      </h1>
+    <div className="w-full overflow-x-hidden p-4 min-h-[60vh]">
 
-      <div className="flex gap-6 flex-wrap-reverse justify-center items-center">
-        {notes.length === 0 ? (
-          <h3 className="text-gray-400 capitalize flex justify-center items-center w-full h-[50vh]">
-            not any notes yet....
-          </h3>
-        ) : (
-          notes.map((note, index) => (
-            <div key={index} className="p-5 rounded-2xl shadow-lg">
-              <div className="border-1 p-5 rounded-2xl shadow-lg sm:w-[75vw] max-[520px]:w-[75vw] md:w-[300px] h-[auto]">
-                <h2 className="text-xl font-bold mb-2">{note.title}</h2>
-                <p className="text-white-600 mb-3 whitespace-break-spaces">
-                  {note.msg}
-                </p>
-                <p className="text-sm text-gray-400 text-right">{note.date}</p>
+      <h2 className="text-3xl font-bold text-white mb-5">Your Notes</h2>
 
-                <div className="flex justify-between mt-3">
-                  <button
-                    onClick={() => window.startEditNote(note)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                  >
-                    Edit
-                  </button>
+      {/* Notes Grid */}
+      <div className="gap-5 flex justify-center flex-wrap-reverse">
+        {notes.map((note) => (
+          <div
+            key={note.id}
+            className="w-[300px] h-auto bg-gradient-to-br from-[#a256f2] to-[#0459ed] text-white p-5 rounded-2xl shadow-lg backdrop-blur-lg transition-transform hover:scale-[1.02] hover:shadow-2xl overflow-x-hidden"
+          >
+            {/* Title */}
+            <h3 className="text-xl font-bold truncate">{note.title}</h3>
 
-                  <button
-                    onClick={() => deleteNote(note.id)}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
-                  >
-                    Delete
-                  </button>
-                </div>
+            {/* Message */}
+            <p className="whitespace-pre-line mt-2 text-sm opacity-90">
+              {note.msg}
+            </p>
+
+            {/* Date */}
+            {note.date && (
+              <div className="mt-3 text-xs bg-black/30 inline-block px-3 py-1 rounded-full">
+                <p className="text-xs p-1">📅  {formatDate(note.date)}</p>
               </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={() => onEdit(note)}
+                className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 rounded-lg transition"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => deleteNote(note.id)}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-lg transition"
+              >
+                Delete
+              </button>
             </div>
-          ))
-        )}
+
+          </div>
+        ))}
       </div>
+
+      {notes.length === 0 && (
+        <p className="text-center text-gray-300 text-lg mt-10">
+          No notes found. Create a new one!
+        </p>
+      )}
     </div>
   );
 }

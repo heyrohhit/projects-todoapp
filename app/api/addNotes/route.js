@@ -2,6 +2,8 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
+    // console.log("form data is", body)
+
     if(body.title == "" || body.msg == ""){
         return new Response(JSON.stringify({
       success: false,

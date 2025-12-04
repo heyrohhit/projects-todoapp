@@ -1,176 +1,149 @@
 "use client";
 import { useState, useEffect } from "react";
-import AlertMsg from "../AlertMsg/page";
 
-const Page = () => {
-  const [formShow, setFormShow] = useState(false);
+export default function AddNotes({ editData, clearEdit, closeMobileForm }) {
+  
+  const [alert, setAlert] = useState("");
+  const [open, setOpen] = useState(true);
 
-  const [noteData, setNoteData] = useState({
-    id: null,
-    title: "",
-    msg: "",
-    date: "",
-  });
-
-  const [isEdit, setIsEdit] = useState(false);
-
-  // 🔥 Alert message states
-  const [alert, setAlert] = useState(null);
-
-  // 🔥 Loading message (Note Adding…)
-  const [loadingMsg, setLoadingMsg] = useState("");
-
-  const toggleForm = () => setFormShow(!formShow);
-
-  const handelForm = (e) => {
-    setNoteData({
-      ...noteData,
-      [e.target.name]: e.target.value,
+  const getFormattedDateTime = () => {
+    return new Date().toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
     });
   };
 
-  const submitHandler = async (e) => {
+  const [formData, setFormData] = useState({
+    id: crypto.randomUUID(),
+    title: "",
+    msg: "",
+    date: getFormattedDateTime(),
+  });
+
+  // EDIT MODE (Load existing note)
+  useEffect(() => {
+    if (editData) {
+      setFormData(editData);
+    }
+  }, [editData]);
+
+  // Input change handler
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  // Submit handler
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Show loading message
-    setLoadingMsg(isEdit ? "Updating note..." : "Adding note...");
 
-    let finalNote = {
-      ...noteData,
-      date: new Date().toLocaleString(),
-      id: noteData.id || Date.now(),
-    };
+    if (!formData.title || !formData.msg) {
+      setOpen(false);
+      setAlert("Please fill all fields");
+      setTimeout(() => setAlert(""), 1500);
+      return;
+    }
 
-    const response = await fetch("/api/addNotes", {
+    // Set fresh date/time for NEW note OR updated note
+    const updatedFormData = { ...formData, date: getFormattedDateTime() };
+
+    const res = await fetch("/api/addNotes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(finalNote),
+      body: JSON.stringify(updatedFormData),
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
     if (data.success) {
-      const oldNotes = JSON.parse(localStorage.getItem("notes") || "[]");
+      const newNote = data.note;
+      const oldNotes = JSON.parse(localStorage.getItem("notes")) || [];
+
+      closeMobileForm && closeMobileForm(); // 👈 MOBILE FORM CLOSE
 
       let updatedNotes = [];
 
-      if (isEdit) {
+      if (editData) {
+        // EDIT MODE
         updatedNotes = oldNotes.map((n) =>
-          n.id === finalNote.id ? finalNote : n
+          n.id === newNote.id ? newNote : n
         );
+
+        clearEdit(); // reset edit mode
+        closeMobileForm && closeMobileForm(); // 👈 MOBILE FORM CLOSE
       } else {
-        updatedNotes = [...oldNotes, finalNote];
+        // ADD MODE
+        updatedNotes = [...oldNotes, newNote];
       }
 
       localStorage.setItem("notes", JSON.stringify(updatedNotes));
       window.dispatchEvent(new Event("notesUpdated"));
 
-      // Hide loading
-      setLoadingMsg("");
-
-      // Show success alert
-      setAlert({
-        type: "success",
-        msg: isEdit ? "Note Updated Successfully!" : "Note Added Successfully!",
-      });
-
       // Reset form
-      setNoteData({
-        id: null,
+      setFormData({
+        id: crypto.randomUUID(),
         title: "",
         msg: "",
-        date: "",
+        date: getFormattedDateTime(),
       });
 
-      setIsEdit(false);
-      setFormShow(false);
-    } else {
-      setLoadingMsg("");
-
-      setAlert({
-        type: "error",
-        msg: data.error,
-      });
+      setAlert(editData ? "Note Updated!" : "Note Added!");
+      setOpen(true);
+      setTimeout(() => setAlert(""), 1500);
     }
   };
 
-  const startEdit = (note) => {
-    setNoteData(note);
-    window.dispatchEvent(new Event("notesUpdated"));
-    setIsEdit(true);
-    setFormShow(true);
-  };
-
-  useEffect(() => {
-    window.startEditNote = startEdit;
-    window.dispatchEvent(new Event("notesUpdated"));
-  }, []);
-
   return (
-    <main className={`h-fit sticky top-[60px] ${formShow ? "h-screen" : "sm:h-auto md:h-screen"} sm:flex sm:items-center sm:flex-col sm:w-screen`}>
+    <div className="w-full h-full p-6 rounded-xl shadow-lg bg-gray-900 text-white">
 
-      {/* 🔥 ALERT MESSAGE (Show Below Add Button) */}
-      <div className="w-full max-w-xl mx-auto mt-2 p-2">
-        {alert && (
-          <AlertMsg
-            type={alert.type}
-            msg={alert.msg}
-            onClose={() => setAlert(null)}
-          />
-        )}
-      </div>
+      <h2 className="text-2xl font-bold text-center mb-4">
+        {editData ? "Edit Note" : "Add Note"}
+      </h2>
 
-      {/* 🔥 LOADING MESSAGE */}
-      {loadingMsg && (
-        <p className="w-full text-center text-white mt-2">{loadingMsg}</p>
+      {alert && (
+        <div
+          className={`${open ? "bg-green-600" : "bg-red-600"} 
+          w-full text-center p-2 mb-3 rounded`}
+        >
+          {alert}
+        </div>
       )}
 
-      <div
-        className={`
-         text-white p-6 rounded-lg w-full max-w-xl
-          transition-all duration-300
-          ${formShow ? "fixed" : "hidden md:block"}
-        `}
-      >
-        <h1 className="text-2xl text-white font-bold text-center mb-4">
-          {isEdit ? "Edit Note" : "Add New Note"}
-        </h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-        <form className="flex flex-col gap-4 sm:items-center" onSubmit={submitHandler} method="POST">
-          <input
-            type="text"
-            placeholder="Enter title"
-            name="title"
-            value={noteData.title}
-            onChange={handelForm}
-            className="rounded p-2 focus:bg-blue-200 focus:text-black md:w-[100%] sm:w-full"
-          />
+        <input
+          type="text"
+          id="title"
+          placeholder="Enter Title"
+          value={formData.title}
+          onChange={handleChange}
+          className="p-2 rounded text-white focus:border border-b-2 border-b-gray-500"
+        />
 
-          <textarea
-            placeholder="Enter description"
-            name="msg"
-            value={noteData.msg}
-            onChange={handelForm}
-            className="md:w-[95%] rounded p-2 h-40 resize-none focus:bg-blue-200 focus:text-black sm:w-full"
-          ></textarea>
+        <textarea
+          id="msg"
+          placeholder="Enter Description"
+          value={formData.msg}
+          onChange={handleChange}
+          className="p-2 rounded h-32 active:border whitespace-break-spaces resize-none text-white border-b-2  border-b-gray-500"
+        />
 
-          <button
-            type="submit"
-            className="w-[100px] bg-orange-500 p-3 rounded-xl hover:bg-orange-600 text-white"
-          >
-            {isEdit ? "Update" : "Add"}
-          </button>
-        </form>
-      </div>
+       <div className="wfull flex justify-around text-center items-center flex-wrap gap-5 ">
+        <p className="md:w-[200px] text-sm md:text-right text-gray-600 sm:text-left">
+          {getFormattedDateTime()}
+        </p>
+         <button
+          type="submit"
+          className="w-[200px] bg-orange-500 text-white py-2 rounded-xl font-bold"
+        >
+          {editData ? "Update" : "Add"}
+        </button>
+       </div>
 
-      <button
-        onClick={toggleForm}
-        className="md:hidden fixed top-15 right-5 bg-black text-white rounded-full w-12 h-12 flex justify-center items-center text-2xl"
-      >
-        {formShow ? "X" : "+"}
-      </button>
-    </main>
+      </form>
+
+    </div>
   );
-};
-
-export default Page;
+}
