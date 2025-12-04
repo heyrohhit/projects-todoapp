@@ -37,11 +37,11 @@ export default function ShowNotes({ onEdit }) {
       <h2 className="text-3xl font-bold text-white mb-5">Your Notes</h2>
 
       {/* Notes Grid */}
-      <div className={`columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 p-4 `}>
+      <div className={`columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-8 p-2 place-items-center`}>
         {notes.slice().reverse().map((note) => (
           <div
             key={note.id}
-            className={` mb-4 break-inside-avoid h-fit bg-gradient-to-br from-[#a256f2] to-[#0459ed] text-white p-5 rounded-2xl shadow-lg backdrop-blur-lg transition-transform hover:scale-[1.02] hover:shadow-2xl overflow-x-hidden`}
+            className={`w-[220px] mb-4 break-inside-avoid h-fit bg-gradient-to-br from-[#a256f2] to-[#0459ed] text-white p-5 rounded-2xl shadow-lg backdrop-blur-lg transition-transform hover:scale-[1.02] hover:shadow-2xl overflow-x-hidden`}
           >
             {/* Title */}
             <h3 className="text-xl font-bold truncate">{note.title}</h3>
