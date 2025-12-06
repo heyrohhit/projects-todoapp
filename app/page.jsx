@@ -74,7 +74,7 @@ export default function Page() {
       </div>
 
       {/* Delete All Button */}
-      <div className="fixed bottom-10 right-5 bg-red-600 text-white 
+      <div className="fixed bottom-10 right-5 bg-red-500 text-white 
       p-3 rounded-xl shadow-lg cursor-pointer text-sm uppercase">
        <button className="cursor-pointer" onClick={handleDeletAll}> Delete All Notes</button>
       </div>

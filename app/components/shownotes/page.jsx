@@ -27,7 +27,7 @@ export default function ShowNotes({ onEdit }) {
   return (
     <div className="w-full md:ml-20 overflow-x-hidden p-4 min-h-[60vh] flex justify-center flex-col items-center md:items-start">
 
-      <h2 className="text-3xl font-bold text-white mb-5">Your Notes</h2>
+      <h2 className="text-3xl font-bold text-white mb-5 font-[time-new-roman] font-semibold">Your Notes</h2>
 
       {/* Masonry Layout (Pinterest Style) */}
       <div className="w-full 
@@ -50,10 +50,10 @@ export default function ShowNotes({ onEdit }) {
               h-fit"
           >
             {/* Title */}
-            <h3 className="text-xl font-bold break-all">{note.title}</h3>
+            <h3 className="text-xl break-all font-medium capitalize font-[cursive]">{note.title}</h3>
 
             {/* Message */}
-            <p className="whitespace-pre-line mt-2 text-sm opacity-90 break-all">
+            <p className="whitespace-pre-line mt-2 text-sm opacity-90 break-all capitalize text-gray-300">
               {note.msg}
             </p>
 
